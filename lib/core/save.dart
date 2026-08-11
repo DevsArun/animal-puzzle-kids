@@ -62,6 +62,14 @@ class Save {
     await _p.setBool('muted', v);
   }
 
+  // ---- Kid-friendly guide: shown once per mode ----
+
+  static bool guideSeen(int mode) => _p.getBool('guide_$mode') ?? false;
+
+  static Future<void> markGuideSeen(int mode) async {
+    await _p.setBool('guide_$mode', true);
+  }
+
   // ---- Daily reward chest (free stickers, no money involved) ----
 
   static Set<int> ownedStickers() {

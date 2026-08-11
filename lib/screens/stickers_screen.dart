@@ -10,7 +10,7 @@ import '../core/widgets.dart';
 import '../data/animals.dart';
 import '../data/levels.dart';
 
-/// 60 free cosmetic stickers, unlocked with stars (no money involved).
+/// 60 free cosmetic stickers, unlocked with stars or the daily chest.
 class StickersScreen extends StatefulWidget {
   const StickersScreen({super.key});
 

@@ -177,7 +177,7 @@ class _ParentsScreenState extends State<ParentsScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Version 1.1.2 (4)',
+                    'Version 1.2.0 (5)',
                     style: Clay.title(
                       size: 14,
                       color: Clay.ink.withValues(alpha: 0.4),

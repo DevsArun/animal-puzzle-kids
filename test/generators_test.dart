@@ -1,4 +1,5 @@
 import 'package:animal_puzzle_kids/data/animals.dart';
+import 'package:animal_puzzle_kids/data/guides.dart';
 import 'package:animal_puzzle_kids/data/levels.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -97,6 +98,20 @@ void main() {
       expect(shadowSpecFor(20).options, shadowSpecFor(20).options);
       expect(memorySpecFor(40).deck, memorySpecFor(40).deck);
       expect(countSpecFor(63).options, countSpecFor(63).options);
+    });
+  });
+
+  group('guides', () {
+    test('every mode has a 2-3 step guide with no empty text', () {
+      for (final GameMode mode in GameMode.values) {
+        final List<GuideStep> steps = kGuides[mode]!;
+        expect(steps.length, inInclusiveRange(2, 3),
+            reason: 'mode $mode missing steps');
+        for (final GuideStep s in steps) {
+          expect(s.text.isNotEmpty, true);
+          expect(s.emoji.isNotEmpty, true);
+        }
+      }
     });
   });
 

@@ -16,6 +16,7 @@ import '../games/odd_one_game.dart';
 import '../games/pattern_game.dart';
 import '../games/shadow_game.dart';
 import '../games/size_game.dart';
+import 'guide.dart';
 
 class GameScreen extends StatefulWidget {
   final GameMode mode;
@@ -32,6 +33,23 @@ class _GameScreenState extends State<GameScreen> {
   int _mistakes = 0;
   int _runId = 0;
   late Stopwatch _watch = Stopwatch()..start();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!Save.guideSeen(widget.mode.index)) {
+        _showGuide();
+      }
+    });
+  }
+
+  /// Kid-friendly "Kaise khele?" overlay. Auto-shows on first play of a
+  /// mode, and anytime via the ? button in the top bar.
+  Future<void> _showGuide() async {
+    await showGameGuide(context, widget.mode);
+    await Save.markGuideSeen(widget.mode.index);
+  }
 
   void _onWin(int mistakes) {
     if (_won) return;
@@ -211,6 +229,13 @@ class _GameScreenState extends State<GameScreen> {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    IconClayButton(
+                      icon: Icons.help_outline_rounded,
+                      color: Clay.teal,
+                      onTap: _showGuide,
+                      size: 44,
+                    ),
+                    const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 14, vertical: 8),

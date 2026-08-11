@@ -1,6 +1,7 @@
 # Animal Puzzle Kids
 
 512 offline animal puzzle levels for kids (age 3-12). 8 game modes, 3D clay art,
+world map, habitat scenes, ambient music, kid-friendly guides, daily chest,
 zero ads, zero internet permission, zero data collection. Paid app ($4.99) for
 Amazon Fire tablets.
 
@@ -8,6 +9,9 @@ Amazon Fire tablets.
 
 1. GitHub pe naya repo banao: `animal-puzzle-kids` (Private rakho).
 2. Is ZIP ka saara content repo mein upload karo (drag & drop ya git push).
+   Dhyan rahe: `.github/` folder bhi upload hona chahiye (GitHub web upload
+   hidden folders kabhi-kabhi skip karta hai - upload ke baad check kar lo
+   ki `.github/workflows/build.yml` repo mein dikhta hai).
 3. Repo > Settings > Secrets and variables > Actions > New repository secret.
    4 secrets daalo (values signing-kit ZIP ke `SECRETS.txt` mein hain):
    - `SIGNING_KEYSTORE_BASE64`
@@ -21,10 +25,12 @@ Amazon Fire tablets.
 
 ## Structure
 
-- `lib/` - app code (8 game modes, screens, core logic)
-- `test/` - unit tests (generators + progress logic)
+- `lib/` - app code (8 game modes, world map, screens, core logic)
+- `lib/data/guides.dart` - har mode ka kid-friendly "Kaise khele?" guide
+- `test/` - unit tests (generators + progress logic + guides)
 - `assets/animals/` - 12 clay animal PNGs (transparent)
-- `assets/sfx/` - 8 sound effects (offline WAV)
+- `assets/scenes/` - 4 habitat background JPGs
+- `assets/sfx/` - 8 sound effects + ambient music loop (offline WAV)
 - `ci/` - Android config CI mein apply hota hai (gradle, proguard, icons)
 - `.github/workflows/build.yml` - full CI: analyze > test > debug + signed release APK
 

@@ -1,7 +1,7 @@
 name: animal_puzzle_kids
 description: "Animal Puzzle Kids - 512 offline animal puzzle levels for kids. No ads, no internet, no data collection."
 publish_to: "none"
-version: 1.1.2+4
+version: 1.2.0+5
 
 environment:
   sdk: ">=3.5.0 <4.0.0"
