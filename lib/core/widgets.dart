@@ -89,15 +89,15 @@ class ClayButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            if (widget.emoji != null) ...<Widget>[
-              Text(widget.emoji!, style: TextStyle(fontSize: widget.fontSize + 4)),
+            if (emoji != null) ...<Widget>[
+              Text(emoji!, style: TextStyle(fontSize: fontSize + 4)),
               const SizedBox(width: 10),
             ],
             Flexible(
               child: Text(
-                widget.label,
+                label,
                 textAlign: TextAlign.center,
-                style: Clay.title(size: widget.fontSize, color: widget.textColor),
+                style: Clay.title(size: fontSize, color: textColor),
               ),
             ),
           ],

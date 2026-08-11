@@ -1,4 +1,4 @@
-/// Pure game/progress logic. Unit tested, no Flutter imports.
+// Pure game/progress logic. Unit tested, no Flutter imports.
 
 /// 3 stars for a perfect run, 2 for up to 2 mistakes, else 1.
 int starsForMistakes(int mistakes) {
