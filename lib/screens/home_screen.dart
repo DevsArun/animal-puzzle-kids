@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../core/lang.dart';
 import '../core/palette.dart';
 import '../core/save.dart';
 import '../core/sfx.dart';
@@ -71,11 +72,11 @@ class _HomeScreenState extends State<HomeScreen> {
               children: <Widget>[
                 const Text('🎁', style: TextStyle(fontSize: 54)),
                 const SizedBox(height: 8),
-                Text('Daily Chest!', style: Clay.title(size: 26)),
+                Text(L.t('dailyChest'), style: Clay.title(size: 26)),
                 const SizedBox(height: 12),
                 if (idx == null)
                   Text(
-                    'Sab stickers unlock ho gaye! 🎉',
+                    L.t('allStickers'),
                     textAlign: TextAlign.center,
                     style: Clay.title(size: 16),
                   )
@@ -87,13 +88,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'New sticker: ${kAnimals[idx % kAnimals.length].name}!',
+                    L.t('newSticker').replaceAll(
+                        '@', kAnimals[idx % kAnimals.length].name),
                     style: Clay.title(size: 18),
                   ),
                 ],
                 const SizedBox(height: 16),
                 ClayButton(
-                  label: 'Yay!',
+                  label: L.t('yay'),
                   color: Clay.leaf,
                   fontSize: 18,
                   onTap: () => Navigator.of(ctx).pop(),
@@ -116,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: <Widget>[
           Text('Animal Puzzle Kids', style: Clay.title(size: 24)),
           Text(
-            'Chhote puzzles, bade fun!',
+            L.t('tagline'),
             style: Clay.title(size: 13, color: Clay.ink.withValues(alpha: 0.5)),
           ),
         ],
@@ -155,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: Clay.cardDeco(radius: 14),
               child: Text(
-                kModeNames[m],
+                L.modeName(m),
                 textAlign: TextAlign.center,
                 style: Clay.title(size: 12),
               ),
@@ -293,7 +295,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onPressed: _openParents,
                       icon: const Text('👪', style: TextStyle(fontSize: 18)),
                       label: Text(
-                        'Parents',
+                        L.t('parents'),
                         style: Clay.title(
                           size: 15,
                           color: Clay.ink.withValues(alpha: 0.5),
@@ -302,7 +304,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(width: 8),
                     ClayButton(
-                      label: 'Stickers',
+                      label: L.t('stickers'),
                       emoji: '🎒',
                       color: Clay.teal,
                       fontSize: 16,

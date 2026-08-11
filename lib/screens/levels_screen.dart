@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../core/lang.dart';
 import '../core/logic.dart';
 import '../core/palette.dart';
 import '../core/save.dart';
@@ -144,7 +145,7 @@ class _LevelsScreenState extends State<LevelsScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    '${kModeEmojis[m]} ${kModeNames[m]}',
+                    '${kModeEmojis[m]} ${L.modeName(m)}',
                     style: Clay.title(size: 24),
                     overflow: TextOverflow.ellipsis,
                   ),

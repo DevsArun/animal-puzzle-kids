@@ -1,5 +1,5 @@
+import 'package:animal_puzzle_kids/core/lang.dart';
 import 'package:animal_puzzle_kids/data/animals.dart';
-import 'package:animal_puzzle_kids/data/guides.dart';
 import 'package:animal_puzzle_kids/data/levels.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -101,16 +101,25 @@ void main() {
     });
   });
 
-  group('guides', () {
-    test('every mode has a 2-3 step guide with no empty text', () {
-      for (final GameMode mode in GameMode.values) {
-        final List<GuideStep> steps = kGuides[mode]!;
-        expect(steps.length, inInclusiveRange(2, 3),
-            reason: 'mode $mode missing steps');
-        for (final GuideStep s in steps) {
-          expect(s.text.isNotEmpty, true);
-          expect(s.emoji.isNotEmpty, true);
+  group('localization', () {
+    test('every string exists in all 8 languages', () {
+      for (final MapEntry<String, Map<String, String>> e in kStrings.entries) {
+        for (final String lang in L.langs) {
+          expect(e.value[lang], isNotNull,
+              reason: 'key ${e.key} missing language $lang');
+          expect(e.value[lang]!.isNotEmpty, true,
+              reason: 'key ${e.key} empty in $lang');
         }
+      }
+    });
+    test('english mode names match kModeNames', () {
+      for (int m = 0; m < kModeCount; m++) {
+        expect(kStrings['mode_$m']!['en'], kModeNames[m]);
+      }
+    });
+    test('guide captions exist for every mode', () {
+      for (int m = 0; m < kModeCount; m++) {
+        expect(kStrings.containsKey('guide_$m'), true);
       }
     });
   });

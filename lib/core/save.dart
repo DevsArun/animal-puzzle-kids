@@ -62,6 +62,14 @@ class Save {
     await _p.setBool('muted', v);
   }
 
+  // ---- Language (picked on first launch) ----
+
+  static String? get langCode => _p.getString('lang');
+
+  static Future<void> setLang(String code) async {
+    await _p.setString('lang', code);
+  }
+
   // ---- Kid-friendly guide: shown once per mode ----
 
   static bool guideSeen(int mode) => _p.getBool('guide_$mode') ?? false;

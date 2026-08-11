@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'lang.dart';
 import 'palette.dart';
 import 'sfx.dart';
 
@@ -566,12 +567,12 @@ Future<bool> showParentalGate(BuildContext context) async {
       return AlertDialog(
         backgroundColor: Clay.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text('Parents only', style: Clay.title(size: 22)),
+        title: Text(L.t('parentsOnly'), style: Clay.title(size: 22)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(
-              'Solve this to continue',
+              L.t('solveToContinue'),
               style:
                   Clay.title(size: 15, color: Clay.ink.withValues(alpha: 0.55)),
             ),
@@ -612,7 +613,7 @@ Future<bool> showParentalGate(BuildContext context) async {
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel', style: TextStyle(fontSize: 16)),
+            child: Text(L.t('cancel'), style: const TextStyle(fontSize: 16)),
           ),
         ],
       );

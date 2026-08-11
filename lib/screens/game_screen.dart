@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../core/lang.dart';
 import '../core/logic.dart';
 import '../core/palette.dart';
 import '../core/save.dart';
@@ -157,12 +158,12 @@ class _GameScreenState extends State<GameScreen> {
             ),
           ),
           const SizedBox(height: 6),
-          Text('Great job! 🎉', style: Clay.title(size: 30)),
+          Text(L.t('winTitle'), style: Clay.title(size: 30)),
           const SizedBox(height: 10),
           AnimatedStars(stars: starsForMistakes(_mistakes), size: 52),
           const SizedBox(height: 6),
           Text(
-            'Level ${widget.level + 1} complete',
+            L.t('levelComplete').replaceAll('@', '${widget.level + 1}'),
             style: Clay.title(size: 16, color: Clay.ink.withValues(alpha: 0.5)),
           ),
           const SizedBox(height: 18),
@@ -172,7 +173,7 @@ class _GameScreenState extends State<GameScreen> {
             alignment: WrapAlignment.center,
             children: <Widget>[
               ClayButton(
-                label: 'Replay',
+                label: L.t('replay'),
                 emoji: '🔁',
                 color: Clay.sun,
                 textColor: Clay.ink,
@@ -181,14 +182,14 @@ class _GameScreenState extends State<GameScreen> {
               ),
               if (widget.level + 1 < kLevelsPerMode)
                 ClayButton(
-                  label: 'Next',
+                  label: L.t('next'),
                   emoji: '➡️',
                   color: Clay.leaf,
                   fontSize: 18,
                   onTap: _next,
                 ),
               ClayButton(
-                label: 'Menu',
+                label: L.t('menu'),
                 emoji: '🏠',
                 color: Clay.teal,
                 fontSize: 18,
@@ -224,7 +225,7 @@ class _GameScreenState extends State<GameScreen> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        '${kModeEmojis[m]} ${kModeNames[m]}',
+                        '${kModeEmojis[m]} ${L.modeName(m)}',
                         style: Clay.title(size: 22),
                         overflow: TextOverflow.ellipsis,
                       ),

@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../core/lang.dart';
 import '../core/logic.dart';
 import '../core/palette.dart';
 import '../core/save.dart';
@@ -124,7 +125,7 @@ class _StickersScreenState extends State<StickersScreen> {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text('Sticker Book', style: Clay.title(size: 26)),
+                  child: Text(L.t('stickerBook'), style: Clay.title(size: 26)),
                 ),
                 Container(
                   padding:
