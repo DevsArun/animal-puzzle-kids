@@ -1,0 +1,150 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Animal Puzzle Kids
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Flutter (pinned)
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.35.x"
+
+      - name: Cache pub + gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-pub-gradle-${{ hashFiles('pubspec.yaml', 'ci/**') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-gradle-
+
+      - name: flutter pub get
+        run: flutter pub get
+
+      - name: Analyze (blocking, zero issues allowed)
+        run: flutter analyze --fatal-infos --fatal-warnings
+
+      - name: Unit tests (blocking)
+        run: flutter test
+
+      - name: Generate Android shell (throwaway dir, copy ONLY android/)
+        run: |
+          flutter create --org com.itschool --project-name animalpuzzle --platforms android _shell
+          cp -r _shell/android android
+          rm -rf _shell
+
+      - name: Apply app Android config
+        run: |
+          cp ci/app-build.gradle.kts android/app/build.gradle.kts
+          cp ci/proguard-rules.pro android/app/proguard-rules.pro
+          cp ci/launch_background.xml android/app/src/main/res/drawable/launch_background.xml
+          rm -rf android/app/src/main/res/mipmap-anydpi-v26 || true
+          cat ci/gradle.properties.append >> android/gradle.properties
+          sed -i 's/android:label="[^"]*"/android:label="Animal Puzzle Kids"/' android/app/src/main/AndroidManifest.xml
+          sed -i '/android.permission.INTERNET/d' android/app/src/main/AndroidManifest.xml
+          sed -i '/android.permission.INTERNET/d' android/app/src/debug/AndroidManifest.xml
+          sed -i '/android.permission.INTERNET/d' android/app/src/profile/AndroidManifest.xml
+
+      - name: Install launcher icons
+        run: |
+          for spec in mdpi:48 hdpi:72 xhdpi:96 xxhdpi:144 xxxhdpi:192; do
+            dpi="${spec%%:*}"
+            size="${spec##*:}"
+            convert ci/icon-1024.png -resize "${size}x${size}" "android/app/src/main/res/mipmap-${dpi}/ic_launcher.png"
+          done
+
+      - name: Write signing files from secrets
+        env:
+          SIGNING_KEYSTORE_BASE64: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+        run: |
+          echo "$SIGNING_KEYSTORE_BASE64" | base64 -d > android/app/keystore.jks
+          test -s android/app/keystore.jks
+          {
+            echo "storePassword=$SIGNING_STORE_PASSWORD"
+            echo "keyPassword=$SIGNING_KEY_PASSWORD"
+            echo "keyAlias=$SIGNING_KEY_ALIAS"
+            echo "storeFile=keystore.jks"
+          } > android/key.properties
+
+      - name: Build debug APK (Appetize only - never upload to Amazon)
+        run: flutter build apk --debug
+
+      - name: Build signed release APK (Amazon upload)
+        run: flutter build apk --release
+
+      - name: Verify release signature
+        env:
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+        run: |
+          set -e
+          APK="build/app/outputs/flutter-apk/app-release.apk"
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
+          echo "Using apksigner: $APKSIGNER"
+          "$APKSIGNER" verify --verbose --print-certs "$APK" | tee /tmp/apk-verify.txt
+          if grep -q "Android Debug" /tmp/apk-verify.txt; then
+            echo "::error::Release APK is signed with the Android Debug certificate!"
+            exit 1
+          fi
+          V2_SHA="$(grep 'V2 Signer: certificate SHA-256 digest:' /tmp/apk-verify.txt | head -n 1 | sed 's/.*digest: //' | tr -d ':' | tr 'A-F' 'a-f')"
+          KS_SHA="$(keytool -list -v -keystore android/app/keystore.jks -storepass "$SIGNING_STORE_PASSWORD" -alias "$SIGNING_KEY_ALIAS" 2>/dev/null | grep 'SHA256:' | head -n 1 | sed 's/.*SHA256: //' | tr -d ':' | tr 'A-F' 'a-f')"
+          echo "APK V2 SHA-256:   $V2_SHA"
+          echo "Keystore SHA-256: $KS_SHA"
+          if [ -z "$V2_SHA" ] || [ "$V2_SHA" != "$KS_SHA" ]; then
+            echo "::error::Signature mismatch between APK and keystore"
+            exit 1
+          fi
+          echo "$V2_SHA" > /tmp/cert-sha.txt
+
+      - name: Upload release artifact (Amazon)
+        uses: actions/upload-artifact@v4
+        with:
+          name: AMAZON-UPLOAD-signed-release
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+
+      - name: Upload debug artifact (Appetize only)
+        uses: actions/upload-artifact@v4
+        with:
+          name: APPETIZE-ONLY-debug
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+
+      - name: Job summary
+        if: always()
+        run: |
+          VERSION="$(grep '^version:' pubspec.yaml | sed 's/version: //')"
+          VNAME="${VERSION%%+*}"
+          VCODE="${VERSION##*+}"
+          {
+            echo "## Animal Puzzle Kids - build summary"
+            echo ""
+            echo "- versionName: \`$VNAME\`"
+            echo "- versionCode: \`$VCODE\`"
+            if [ -f /tmp/cert-sha.txt ]; then echo "- Cert SHA-256: \`$(cat /tmp/cert-sha.txt)\`"; fi
+            echo ""
+            echo "### Artifacts"
+            echo "- **AMAZON-UPLOAD-signed-release** = upload ONLY this one to the Amazon Appstore"
+            echo "- **APPETIZE-ONLY-debug** = Appetize.io testing ONLY. NEVER upload the debug APK to Amazon."
+          } >> "$GITHUB_STEP_SUMMARY"
