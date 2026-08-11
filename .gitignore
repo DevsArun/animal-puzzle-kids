@@ -1,0 +1,22 @@
+# Flutter / Dart
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Android shell is generated in CI - never commit it
+android/
+_shell/
+
+# Signing - NEVER commit these
+*.jks
+*.keystore
+key.properties
+signing-kit/
+
+# IDE / OS
+.idea/
+*.iml
+.vscode/
+.DS_Store
