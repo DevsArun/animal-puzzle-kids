@@ -1,0 +1,25 @@
+name: animal_puzzle_kids
+description: "Animal Puzzle Kids - 512 offline animal puzzle levels for kids. No ads, no internet, no data collection."
+publish_to: "none"
+version: 1.1.0+2
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  audioplayers: 6.1.0
+  shared_preferences: 2.5.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: 5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/animals/
+    - assets/scenes/
+    - assets/sfx/
